@@ -2,7 +2,7 @@ use rs_stats::StatsError;
 use rs_stats::distributions::normal_distribution::normal_cdf;
 use std::f64::consts::E;
 
-use asset_types::EuropeanCall;
+use asset::EuropeanCall;
 
 /** Discount for an asset.
 
