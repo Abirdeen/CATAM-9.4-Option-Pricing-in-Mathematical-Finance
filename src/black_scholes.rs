@@ -1,24 +1,8 @@
 use rs_stats::StatsError;
 use rs_stats::distributions::normal_distribution::normal_cdf;
-use std::f64::consts::E;
 
 use asset::EuropeanCall;
-
-/** Discount for an asset.
-
-    Parameters
-    ----------
-    * `call` : A European call on an underlying asset.
-    * `interest_rate` : The continuously compounded risk-free interest rate.
-
-    Returns
-    -------
-    * `f64` : The stock moneyness of the underlying, under the appropriate risk-neutral probability measure.
-*/
-fn discount_factor(strike_time: f64, interest_rate: f64) -> f64 {
-    let discount = E.powf(-strike_time*interest_rate);
-    return discount
-}
+use asset::CallOption;
 
 /** Stock moneyness for a European call.
 
@@ -73,4 +57,18 @@ pub fn black_scholes_price(call: &EuropeanCall) -> Result<f64,StatsError> {
 
     let price = discount * undiscounted_price;
     return Ok(price)
+}
+
+pub trait BS86: CallOption {
+    fn black_scholes_price(&self) -> f64;
+}
+
+impl BS86 for EuropeanCall {
+    fn black_scholes_price(&self) -> f64 {
+        let price = black_scholes_price(self);
+        match price {
+            Ok(price) => return price,
+            Err(error) => panic!("{}", error)
+        }
+    }
 }

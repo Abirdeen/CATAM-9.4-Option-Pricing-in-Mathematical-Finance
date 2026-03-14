@@ -5,3 +5,4 @@ authors = ["Aberdeen <aberdeen.powell@gmail.com>"]
 
 [dependencies]
 rs-stats = "2.0.3"
+plotters = "0.3.7"

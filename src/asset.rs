@@ -10,6 +10,24 @@ impl Underlying {
         return Underlying{spot_price, std_dev, interest_rate}
     }
 
+    pub fn mean(&self) -> f64 {
+        return self.interest_rate - (self.std_dev.powf(2.0)/2.0)
+    }
+
+    /** Discount for an asset.
+
+        Parameters
+        ----------
+        * `time` : The time over which the discount is applied.
+
+        Returns
+        -------
+        * `f64` : The discount.
+    */
+    pub fn discount_factor(&self, time: f64) -> f64 {
+        return (-time*self.interest_rate).exp()
+    }
+
     pub fn fwd_price(&self, time: f64) -> f64 {
         return self.spot_price/self.discount_factor(time)
     }
@@ -17,26 +35,33 @@ impl Underlying {
 
 pub struct EuropeanCall {
     pub strike_price: f64,
-    pub strike_time: f64,
+    pub expiry_time: f64,
     pub underlying: Underlying
 }
 
 impl EuropeanCall {
-    pub fn new(strike_price: f64, strike_time: f64, underlying: Underlying) -> EuropeanCall {
-        return EuropeanCall{strike_price, strike_time, underlying}
+    pub fn new(strike_price: f64, expiry_time: f64, underlying: Underlying) -> EuropeanCall {
+        return EuropeanCall{strike_price, expiry_time, underlying}
+    }
+}
+
+pub trait CallOption {
+    fn underlying(&self) -> Underlying;
+    fn expiry_time(&self) -> f64;
+    fn strike_price(&self) -> f64;
+}
+
+impl CallOption for EuropeanCall {
+
+    fn underlying(&self) -> Underlying {
+        self.underlying
     }
 
-    /** Computes the Black-Scholes price.
+    fn expiry_time(&self) -> f64 {
+        self.expiry_time
+    }
 
-        Parameters
-        ----------
-        * `interest_rate` : The continuously compounded risk-free interest rate.
-
-        Returns
-        -------
-        * `f64` : The price of the call.
-    */
-    pub fn black_scholes_price(&self, interest_rate: f64) -> Result<f64, rs_stats::StatsError> {
-        return black_scholes_price(self, interest_rate)
+    fn strike_price(&self) -> f64 {
+        self.strike_price
     }
 }
