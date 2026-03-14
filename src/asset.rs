@@ -1,17 +1,17 @@
-use crate::black_scholes::black_scholes_price;
-
+#[derive(Clone, Copy)]
 pub struct Underlying {
     pub spot_price: f64,
-    pub std_dev: f64
+    pub std_dev: f64,
+    pub interest_rate: f64
 }
 
 impl Underlying {
-    pub fn new(spot_price: f64, std_dev: f64) -> Underlying {
-        return Underlying{spot_price, std_dev}
+    pub fn new(spot_price: f64, std_dev: f64, interest_rate: f64) -> Underlying {
+        return Underlying{spot_price, std_dev, interest_rate}
     }
 
-    pub fn fwd_price(&self, time: f64, interest: f64) -> f64 {
-        return self.spot_price*(interest*time).exp()
+    pub fn fwd_price(&self, time: f64) -> f64 {
+        return self.spot_price/self.discount_factor(time)
     }
 }
 
