@@ -58,13 +58,10 @@ We generate our results using the following code:
 ```rust
 fn main() -> Result<(), Box<&'static str>> {
     for spot_price in [52.0,100.0,107.0].iter() {
-        let underlying = asset::Underlying::new(*spot_price, 0.5);
-        for strike_time in [2.0, 3.0].iter() {
-            let call = asset::EuropeanCall::new(40.0, *strike_time, underlying);
-            match call.black_scholes_price(0.035) {
-                Ok(price) => println!("spot: {}, strike time: {}, bsp: {:.3}", spot_price, strike_time, price),
-                Err(error) => panic!("{}", error)
-            }
+        let underlying = asset::Underlying::new(*spot_price, 0.5, 0.035);
+        for expiry_time in [2.0, 3.0].iter() {
+            let call = asset::EuropeanCall::new(40.0, *expiry_time, underlying);
+            println!("spot: {}, strike time: {}, bsp: {:.3}", spot_price, expiry_time, call.black_scholes_price());
         }
     }
     Ok(())
