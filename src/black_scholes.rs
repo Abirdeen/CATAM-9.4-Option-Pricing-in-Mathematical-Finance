@@ -17,7 +17,7 @@ use asset::CallOption;
 fn stock_moneyness(call: &EuropeanCall) -> f64 {
     let underlying = &call.underlying;
     let fwd_price = underlying.fwd_price(call.expiry_time);
-    let moneyness = ((fwd_price/call.strike_price).ln() + (underlying.interest_rate + underlying.std_dev.powf(2.0)/2.0)*call.expiry_time) / (underlying.std_dev*call.expiry_time.sqrt());
+    let moneyness = ((fwd_price/call.strike_price).ln() + (underlying.std_dev.powf(2.0)/2.0)*call.expiry_time) / (underlying.std_dev*call.expiry_time.sqrt());
     return moneyness
 }
 
