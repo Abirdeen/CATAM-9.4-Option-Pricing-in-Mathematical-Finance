@@ -102,3 +102,58 @@ It is straightforward to see this is solved by $g = \sigma\sqrt{\frac{\tau}{n}}$
 
 ---
 
+### Problem three:
+
+For a European call with the data in [Problem one](#problem-one) and $n = 27$, compile a table of the approximate
+prices. How do they compare to the prices obtained from the Black-Scholes formula?
+
+#### Solution:
+
+We generate our results using the following code:
+
+```rust
+fn main() -> Result<(), Box<&'static str>> {
+    for spot_price in [52.0,100.0,107.0].iter() {
+        let underlying = asset::Underlying::new(*spot_price, 0.5, 0.035);
+        for expiry_time in [2.0, 3.0].iter() {
+            let call = asset::EuropeanCall::new(40.0, *expiry_time, underlying);
+            println!("spot: {}, strike time: {}, bp: {:.3}", spot_price, expiry_time, call.approximate_price(27));
+        }
+    }
+    Ok(())
+}
+```
+
+The table of results is given below:
+
+| $S_0$ | $\hat{\pi}_2$ | $\hat{\pi}_3$ |
+| ----- | ------------- | ------------- |
+| 52    | 21.036        | 23.981        |
+| 100   | 64.185        | 66.791        |
+| 107   | 70.909        | 73.483        |
+
+We can also compute the (relative) difference from the Black-Scholes prices:
+
+| $S_0$ | $\|\pi_2 - \hat{\pi}_2\|$ | $\frac{\|\pi_2 - \hat{\pi}_2\|}{\pi_2}$ | $\|\pi_3 - \hat{\pi}_3\|$ | $\frac{\|\pi_3 - \hat{\pi}_3\|}{\pi_3}$ |
+| --- | ----- | ----- | ----- | ----- |
+| 52  | 0.078 | 0.37% | 0.035 | 0.15% |
+| 100 | 0.052 | 0.08% | 0.053 | 0.08% |
+| 107 | 0.074 | 0.10% | 0.016 | 0.02% |
+
+So our approximations are in general very good, but not exact.
+
+We should expect, given the construction, that as $n\rightarrow\infty$, the approximate prices will approach the exact prices.
+
+---
+
+### Problem four:
+
+Consider an at-the-money case, i.e. where $K = S_0$. Plot the Bernoulli approximation as a function of $n$. Indicate the true value obtained from Black-Scholes.
+
+#### Solution:
+
+We use a variation of the `plotters` example ["Charts"](https://github.com/plotters-rs/plotters/blob/master/plotters/examples/chart.rs) to create the following graph:
+
+<img src="./images/bernoulli_approximations.png" alt="Plot of Bernoulli Approximations with marked Black-Scholes price" width="400"/>
+
+Notice that the approximations oscillate around the true price, and converge to it as $n$ increases.
